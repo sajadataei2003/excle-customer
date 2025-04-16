@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+
 add_action('admin_menu', 'ecpn_add_admin_menu');
 
 function ecpn_add_admin_menu() {
@@ -20,7 +21,7 @@ function ecpn_add_admin_menu() {
         'export-customer-phone-numbers', 
         'ecpn_display_export_page', 
         'dashicons-phone', 
-        6 //
+        6
     );
 }
 
@@ -47,15 +48,15 @@ function ecpn_export_excel() {
         }
 
         
-        $orders = wc_get_orders(array(
-            'limit' => -1, 
-            'status' => 'completed', 
-        ));
-
-        
         require_once plugin_dir_path(__FILE__) . 'vendor/autoload.php';
 
-         
+        
+        $orders = wc_get_orders(array(
+            'limit' => -1,
+            'status' => 'completed',
+        ));
+
+    
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
@@ -77,10 +78,13 @@ function ecpn_export_excel() {
             $row++;
         }
 
-        
-        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+       
+        ob_clean(); 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="customer_phones.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
         $writer->save('php://output');
         exit;
     }
